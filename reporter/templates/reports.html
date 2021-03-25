@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<table  class="table" style="width:70%;margin-left:5%;margin-top:2%;">
+  <tr>
+      <th>ID</th>
+      <th>Wyjazd</th>
+      <th>Przyjazd na miejsce</th>
+      <th>Koniec akcji</th>
+      <th>Powrót</th>
+      <th>Typ zdarzenia</th>
+      <th>Szczegóły</th>
+  </tr>
+  {% for report in reports %}
+      <tr>
+      <th>{{ report.id }}</th>
+      <th>{{ report.departureTime }}</th>
+      <th>{{ report.arrivalTime }}</th>
+      <th>{{ report.actionEndTime }}</th>
+      <th>{{ report.arrivalTime }}</th>
+      <th>{{ report.incidentType }}</th>
+      <th><a href="{% url 'render-to-pdf' report.pk %}"> Pobierz</a></th>
+       </tr>
+  {% endfor %}
+</table>
+
+
+
