@@ -1,9 +1,9 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <h2>New report</h2>
-    <form method="POST" class="post-form">{% csrf_token %}
-        {{ form.as_ul  }}
+    <h2 style="text-align: center;margin-top:50px;margin-bottom:25px;">Stwórz nowy raport</h2>
+    <form method="POST" class="post-form" style="width:90%; border:1px solid black;margin-left:5%">{% csrf_token %}
+        {{ form.as_p  }}
         <button type="submit" class="save btn btn-default">Save</button>
     </form>
 {% endblock %}

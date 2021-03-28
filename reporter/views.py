@@ -4,8 +4,9 @@ from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .forms import ReportForm
-from django.shortcuts import redirect
+from django.contrib import messages
 import datetime
+
 
 def create_report(request):
     if request.method == "POST":
@@ -20,6 +21,7 @@ def create_report(request):
 
     return render(request, 'create_report.html', {'form': form})
 
+
 def reports_list(request):
     reports = Report.objects.all()
     return render(request, "reports.html", {'reports': reports})
@@ -27,6 +29,8 @@ def reports_list(request):
 
 def mainpage(request):
     return render(request, "index.html")
+
+
 def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
     report = Report.objects.get(pk=pk)
@@ -46,5 +50,7 @@ def report_render_pdf_view(request, *args, **kwargs):
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
+
 def render_pdf_view(request):
     pass

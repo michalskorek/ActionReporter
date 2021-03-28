@@ -18,10 +18,10 @@
       <th>{{ report.id }}</th>
       <th>{{ report.reportid }}</th>
       <th>{{ report.incidentPlace }}</th>
-      <th>{{ report.departureTime }}</th>
-      <th>{{ report.arrivalTime }}</th>
-      <th>{{ report.actionEndTime }}</th>
-      <th>{{ report.arrivalTime }}</th>
+      <th>{{ report.departureTime |date:'Y-m-d H:i'}}</th>
+      <th>{{ report.arrivalTime |date:'Y-m-d H:i'}}</th>
+      <th>{{ report.actionEndTime |date:'Y-m-d H:i'}}</th>
+      <th>{{ report.arrivalTime |date:'Y-m-d H:i'}}</th>
       <th>{{ report.incidentType }}</th>
       <th><a href="{% url 'render-to-pdf' report.pk %}"> Pobierz</a></th>
        </tr>
