@@ -22,16 +22,16 @@ def create_report(request):
     return render(request, 'create_report.html', {'form': form})
 
 def modify_report(request, pk):
-    post = get_object_or_404(Report, pk=pk)
+    report = get_object_or_404(Report, pk=pk)
     if request.method == "POST":
-        form = ReportForm(request.POST, instance=post)
+        form = ReportForm(request.POST, instance=report)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = datetime.datetime.now()
-            post.save()
+            report = form.save(commit=False)
+            report.author = request.user
+            report.published_date = datetime.datetime.now()
+            report.save()
     else:
-        form = ReportForm(instance=post)
+        form = ReportForm(instance=report)
     return render(request, 'create_report.html', {'form': form})
 def reports_list(request):
     reports = Report.objects.all()
@@ -50,7 +50,7 @@ def mainpage(request):
 
 def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
-    report = Report.objects.get(pk=pk)
+    report = get_object_or_404(Report, pk=pk)
     template_path = "reportpdf.html"
     context = {'report': report}
     # Create a Django response object, and specify content_type as pdf
@@ -67,7 +67,3 @@ def report_render_pdf_view(request, *args, **kwargs):
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
-
-
-def render_pdf_view(request):
-    pass
