@@ -45,19 +45,23 @@
     <TR VALIGN=TOP>
         <TD COLSPAN=6 WIDTH=auto HEIGHT=50
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P ALIGN=CENTER><FONT FACE="Segoe UI, serif"><FONT SIZE=7><B>OPIS
-                ZDARZENIA</B></FONT></FONT></P>
+            <P ALIGN=CENTER><span FACE="Segoe UI, serif"><FONT SIZE=7><B>
+                OPIS ZDARZENIA
+            </B></FONT></span></P>
         </TD>
         <TD WIDTH=177
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P><FONT FACE="Segoe UI, serif"><FONT SIZE=5><B>L.P</B></FONT></FONT></P>
+            <P><FONT FACE="Segoe UI, serif"><FONT SIZE=5>
+                <B>L.P</B>
+                {{ report.reportid }}
+            </FONT></FONT></P>
         </TD>
     </TR>
     <TR VALIGN=TOP>
         <TD COLSPAN=3 WIDTH=219 HEIGHT=38
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>DATA
-                WYJAZDU
+            <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
+                <b>DATA WYJAZDU</b>
                 <br>
                 {{ report.departureTime| date:'Y-m-d' }}
             </span></span></P>
@@ -65,7 +69,7 @@
         <TD ROWSPAN=3 COLSPAN=4 WIDTH=478
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P><span FACE="Segoe UI, serif"><span SIZE=3>
-                RODZAJ ZDARZENIA
+                <b>RODZAJ ZDARZENIA</b>
                 <br>
                 {{ report.incidentType }}
             </span></span></P>
@@ -75,7 +79,7 @@
         <TD WIDTH=98 HEIGHT=75
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                GODZINA WYJAZDU
+                <b>GODZINA WYJAZDU</b>
                 <br>
                 {{ report.departureTime | date:'H:i' }}
             </span></span></P>
@@ -83,7 +87,7 @@
         <TD COLSPAN=2 WIDTH=107
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                NA MIEJSCU
+                <b>NA MIEJSCU</b>
                 <br>
                 {{ report.arrivalTime | date:'H:i' }}
             </span></span></P>
@@ -93,7 +97,7 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=80
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                MIEJSCE ZDARZENIA
+                <b>MIEJSCE ZDARZENIA</b>
                 <br>
                 {{ report.incidentPlace }}
             <br>
@@ -105,21 +109,25 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=50
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                DOWODCA SEKCJI
+                <b>DOWODCA SEKCJI</b>
                 <br>
                 {{ report.sectionCommander }}
             </span></span></P>
         </TD>
         <TD ROWSPAN=5 COLSPAN=4 WIDTH=478
-            STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P><span FACE="Segoe UI, serif"><span SIZE=3>SEKCJA</span></span></P>
+            STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in;">
+            <P><span FACE="Segoe UI, serif"><span SIZE=3>
+                <b>SEKCJA</b>
+                <br>
+                {{ report.section }}
+            </span></span></P>
         </TD>
     </TR>
     <TR VALIGN=TOP>
         <TD COLSPAN=3 WIDTH=219 HEIGHT=43
             STYLE="border: 1px solid #00000a; padding-top: 0; padding-bottom: 0; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                DOWODCA AKCJI
+                <b>DOWODCA AKCJI</b>
                 <br>
                 {{ report.actionCommander }}</span></span></P>
         </TD>
@@ -128,7 +136,7 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=41
             STYLE="border: 1px solid #00000a; padding-top: 0; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                KIEROWCA
+                <b>KIEROWCA</b>
                 <br>
                 {{ report.driver }}
             </span></span></P>
@@ -138,7 +146,7 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=51
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                SPRAWCA
+                <b>SPRAWCA</b>
                 <br>
                 {{ report.perpetrator }}
             </span></span></P>
@@ -148,7 +156,7 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=56
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
-                POSZKODOWANY
+                <b>POSZKODOWANY</b>
                 <br>
                 {{ report.victim }}
             </span></span></P>
@@ -157,9 +165,8 @@
     <TR>
         <TD COLSPAN=7 WIDTH=711 HEIGHT=248 VALIGN=TOP
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P><span FACE="Segoe UI, serif"><span SIZE=3>SZCZEGOLY
-                ZDARZENIA: JAKIEGO UZYTO SPRZETU, ILOSC JEDNOSTEK, RODZAJ, CZY
-                NA MIEJSCU BYLA POLICJA, POGOTOWIE, CZY BYLY OSOBY RANNE ITP.
+            <P><span FACE="Segoe UI, serif"><span SIZE=3>
+                <b>SZCZEGOLY ZDARZENIA</b>
                 <br>
                 {{ report.details }}
                 </span></span></P>
@@ -170,7 +177,7 @@
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
 
-                DATA POWROTU
+                <b>DATA POWROTU</b>
                 <br>
                 {{ report.actionEndTime |  date:'Y-m-d' }}
 
@@ -180,27 +187,37 @@
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
 
-                GODZINA ZAKONCZENIA
+                <b>GODZINA ZAKONCZENIA</b>
                 <br>
                 {{ report.actionEndTime | date:'H:i' }}
             </span></span></P>
         </TD>
         <TD ROWSPAN=2 WIDTH=130
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P ALIGN=CENTER><FONT FACE="Segoe UI, serif"><FONT SIZE=3>STAN
-                LICZNIKA</FONT></FONT></P>
+            <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
+                <b>STAN LICZNIKA</b>
+                <br>
+                {{ report.counter }}
+            </span></span></P>
         </TD>
         <TD ROWSPAN=2 COLSPAN=2 WIDTH=274
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P ALIGN=CENTER><FONT FACE="Segoe UI, serif"><FONT SIZE=3>ODLEGLOSC
-                OD MIEJSCA ZDARZENIA</FONT></FONT></P>
+            <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
+                <b>ODLEGLOSC OD MIEJSCA ZDARZENIA</b>
+                <br>
+                {{ report.distance }}
+            </span></span></P>
         </TD>
     </TR>
     <TR VALIGN=TOP>
         <TD COLSPAN=2 WIDTH=155
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
-            <P ALIGN=CENTER><FONT FACE="Segoe UI, serif"><FONT SIZE=3>GODZINA
-                W REMIZIE</FONT></FONT></P>
+            <P ALIGN=CENTER><span FACE="Segoe UI, serif"><span SIZE=3>
+                <b>GODZINA W REMIZIE</b>
+                <br>
+                {{ report.fireStationArrivalTime |date:'H:i' }}
+
+            </span></span></P>
         </TD>
     </TR>
 </TABLE>

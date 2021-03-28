@@ -1,13 +1,24 @@
-from django.http import HttpResponse
-from django.views.generic import ListView
 from .models import Report
 from django.shortcuts import render
-import os
-from django.conf import settings
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from django.contrib.staticfiles import finders
+from .forms import ReportForm
+from django.shortcuts import redirect
+import datetime
+
+def create_report(request):
+    if request.method == "POST":
+        form = ReportForm(request.POST)
+        if form.is_valid():
+            report = form.save(commit=False)
+            report.author = request.user
+            report.published_date = datetime.datetime.now()
+            report.save()
+    else:
+        form = ReportForm()
+
+    return render(request, 'create_report.html', {'form': form})
 
 def reports_list(request):
     reports = Report.objects.all()

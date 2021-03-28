@@ -1,8 +1,11 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-<table  class="table" style="width:70%;margin-left:5%;margin-top:2%;">
+{% extends 'index.html' %}
+{% block content %}
+        <h1 style="text-align: center; margin-top:50px;">Twoje raporty</h1>
+    <table  class="table" style="width:90%;margin-left:5%;margin-top:2%;">
   <tr>
-      <th>ID</th>
+      <th>ID globalne</th>
+      <th>ID prywatne</th>
+      <th>Miejsce zdarzenia</th>
       <th>Wyjazd</th>
       <th>Przyjazd na miejsce</th>
       <th>Koniec akcji</th>
@@ -13,6 +16,8 @@
   {% for report in reports %}
       <tr>
       <th>{{ report.id }}</th>
+      <th>{{ report.reportid }}</th>
+      <th>{{ report.incidentPlace }}</th>
       <th>{{ report.departureTime }}</th>
       <th>{{ report.arrivalTime }}</th>
       <th>{{ report.actionEndTime }}</th>
@@ -22,6 +27,4 @@
        </tr>
   {% endfor %}
 </table>
-
-
-
+{% endblock %}
