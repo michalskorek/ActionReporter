@@ -24,6 +24,7 @@ class Report(models.Model):
     details = models.CharField(max_length=2000, default="")
     counter = models.CharField(max_length=10, default="")
     distance = models.CharField(max_length=10, default="")
+    isLocked = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)

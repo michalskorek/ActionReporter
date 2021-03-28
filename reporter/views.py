@@ -1,5 +1,5 @@
 from .models import Report
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
@@ -21,10 +21,27 @@ def create_report(request):
 
     return render(request, 'create_report.html', {'form': form})
 
-
+def modify_report(request, pk):
+    post = get_object_or_404(Report, pk=pk)
+    if request.method == "POST":
+        form = ReportForm(request.POST, instance=post)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.published_date = datetime.datetime.now()
+            post.save()
+    else:
+        form = ReportForm(instance=post)
+    return render(request, 'create_report.html', {'form': form})
 def reports_list(request):
     reports = Report.objects.all()
     return render(request, "reports.html", {'reports': reports})
+
+
+def report_details(request, pk):
+    report = get_object_or_404(Report, pk=pk)
+    firefighters = report.section.split(",")
+    return render(request, 'report.html', {'report': report, 'firefighters': firefighters})
 
 
 def mainpage(request):
@@ -34,7 +51,7 @@ def mainpage(request):
 def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
     report = Report.objects.get(pk=pk)
-    template_path = "report.html"
+    template_path = "reportpdf.html"
     context = {'report': report}
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')

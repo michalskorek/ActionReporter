@@ -11,7 +11,7 @@
       <th>Koniec akcji</th>
       <th>Powrót</th>
       <th>Typ zdarzenia</th>
-      <th>Szczegóły</th>
+      <th>Więcej</th>
   </tr>
   {% for report in reports %}
       <tr>
@@ -23,7 +23,7 @@
       <th>{{ report.actionEndTime |date:'Y-m-d H:i'}}</th>
       <th>{{ report.arrivalTime |date:'Y-m-d H:i'}}</th>
       <th>{{ report.incidentType }}</th>
-      <th><a href="{% url 'render-to-pdf' report.pk %}"> Pobierz</a></th>
+      <th><a href="{% url 'report-details' pk=report.pk %}"> Szczegóły</a></th>
        </tr>
   {% endfor %}
 </table>
