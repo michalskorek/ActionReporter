@@ -1,0 +1,27 @@
+{% extends "index.html" %}
+{% block content %}
+    <div style="margin-left:5%;margin-top:50px;">
+
+    <h1>Jesteś zalogowany jako {{ user.username }}</h1>
+    <h3>Twoje dane:</h3>
+    <p>Dane osobowe: {{ user.first_name }} {{ user.last_name }}</p>
+    <p>Adres email: {{ user.email }}</p>
+    <p>Ostatnie logowanie: {{ user.last_login }}</p>
+    <p>Twoje id: {{ user.id }}</p>
+    <h3>Remizy którymi zarządzasz:</h3>
+    {% if firestationsEmpty %}
+        <p>Nie zarządzasz żadną remizą, <a href={% url "create-firestation" %}>kliknij tutaj</a> aby ją stworzyć.</p>
+    {% endif %}
+    {% if not firestationsEmpty %}
+        <ul>
+        {% for firestation in fireStations %}
+            <li>{{ firestation.stationName }} <a href={% url "firestation-details" pk=firestation.pk %}>
+                Szczegóły
+            </a></li>
+        {% endfor %}
+        </ul>
+        <p><a href={% url 'create-firestation' %}>Dodaj nową remizę</a></p>
+    {% endif %}
+
+    </div>
+{% endblock %}

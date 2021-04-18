@@ -1,0 +1,15 @@
+{% extends "index.html" %}
+{% block content %}
+    <div style="text-align: center; width:99%; margin-top:50px;">
+
+    <h1>Logowanie</h1>
+    <p>Wypełnij poniższy formularz, aby się zalogować:</p>
+    <form action="." method="post">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Zaloguj"></p>
+    </form>
+
+    </div>
+
+{% endblock %}

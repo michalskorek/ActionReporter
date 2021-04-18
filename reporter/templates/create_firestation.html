@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block content %}
+    <h1>Stwórz nową remizę</h1>
+   <form method="POST" class="post-form" style="width:90%; border:1px solid black;margin-left:5%">{% csrf_token %}
+         <p><label for="id_stationName">Nazwa remizy:</label>
+        <input type="text" name="stationName" maxlength="1000" required id="id_stationName"></p>
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+{% endblock %}

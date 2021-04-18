@@ -1,9 +1,68 @@
 {% extends 'index.html' %}
 
+
 {% block content %}
+    <script>
+    function fillCurrentDate(section){
+        element = document.getElementById(section)
+        element.value = Date.now()
+    }
+
+</script>
     <h2 style="text-align: center;margin-top:50px;margin-bottom:25px;">Stwórz nowy / zmodyfikuj istniejący raport</h2>
-    <form method="POST" class="post-form" style="width:90%; border:1px solid black;margin-left:5%">{% csrf_token %}
-        {{ form.as_p  }}
-        <button type="submit" class="save btn btn-default">Save</button>
+    <form method="POST" class="post-form" style="width:90%; border:1px solid black;margin-left:5%; padding:2%;">{% csrf_token %}
+
+               <p><label for="id_stationid">ID remizy:</label> <input type="text" name="stationid" maxlength="10" required id="id_stationid"></p>
+    <p><label for="id_reportid">ID raportu:</label>
+        <input type="text" name="reportid" maxlength="10" required id="id_reportid"></p>
+    <p><label for="id_departureTime">Czas wyjazdu:</label>
+        <input type="datetime-local" name="departureTime" value="" required id="id_departureTime"></p>
+    <p><label for="id_arrivalTime">Czas przyjazdu:</label>
+        <input type="datetime-local" name="arrivalTime" value="" required id="id_arrivalTime"></p>
+        <button onclick="fillCurrentDate('id_arrivalTime')">Aktualna data</button>
+    <p><label for="id_actionEndTime">Czas końca akcji:</label>
+        <input type="datetime-local" name="actionEndTime" value="" required id="id_actionEndTime"></p>
+         <button onclick="fillCurrentDate('id_actionEndTime')">Aktualna data</button>
+    <p><label for="id_fireStationArrivalTime">Czas powrotu do remizy:</label>
+        <input type="datetime-local" name="fireStationArrivalTime" value="" required id="id_fireStationArrivalTime"></p>
+        <button onclick="fillCurrentDate('id_fireStationArrivalTime')">Aktualna data</button>
+    <p><label for="id_incidentType">Typ zdarzenia:</label>
+        <input type="text" name="incidentType" maxlength="1000" required id="id_incidentType"></p>
+    <p><label for="id_incidentPlace">Miejsce zdarzenia:</label>
+        <input type="text" name="incidentPlace" maxlength="50" required id="id_incidentPlace"></p>
+    <p><label for="id_sectionCommander">Dowódca sekcji:</label>
+        <select name="sectionCommander" id="id_sectionCommander">
+            {% for sectionCommander in sectionCommanders %}
+                <option>{{ sectionCommander.firstName }} {{ sectionCommander.lastName }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><label for="id_actionCommander">Dowódca akcji:</label>
+        <select name="actionCommander" id="id_actionCommander">
+            {% for actionCommander in actionCommanders %}
+                <option>{{ actionCommander.firstName }} {{ actionCommander.lastName }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><label for="id_driver">Kierowca:</label>
+        <select name="driver" id="id_driver">
+            {% for driver in drivers %}
+                <option>{{ driver.firstName }} {{ driver.lastName }}</option>
+            {% endfor %}
+        </select>
+    <p><label for="id_perpetrator">Sprawca:</label>
+        <input type="text" name="perpetrator" maxlength="1000" required id="id_perpetrator"></p>
+    <p><label for="id_victim">Poszkodowani:</label>
+        <input type="text" name="victim" maxlength="1000" required id="id_victim"></p>
+    <p><label for="id_section">Sekcja:</label>
+        <input type="text" name="section" maxlength="1000" required id="id_section"></p>
+    <p><label for="id_details">Szczegóły zdarzenia:</label>
+        <input type="text" name="details" maxlength="2000" required id="id_details"></p>
+    <p><label for="id_odometer">Stan licznika:</label>
+        <input type="text" name="odometer" maxlength="10" required id="id_odometer"></p>
+    <p><label for="id_distance">Odległość od miejsca zdarzenia:</label>
+        <input type="text" name="distance" maxlength="10" required id="id_distance"></p>
+        <button type="submit" class="save btn btn-primary">Zapisz</button>
     </form>
+
 {% endblock %}

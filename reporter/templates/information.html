@@ -1,0 +1,9 @@
+{% extends "index.html" %}
+{% block content %}
+    <div style="text-align: center; width:99%; margin-top:50px;">
+     <h1>{{ message }}</h1>
+        {% if return_button %}
+        <h3><a href={{ request.META.HTTP_REFERER }}>Wróć do poprzedniej strony</a></h3>
+        {% endif %}
+    </div>
+{% endblock %}
