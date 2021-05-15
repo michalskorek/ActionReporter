@@ -5,12 +5,15 @@ from django.db import models
 from django.forms import ModelForm
 from django.utils import timezone
 
+
 class Firestation(models.Model):
     stationid = models.AutoField(primary_key=True)
-    stationName = models.CharField(max_length=100,default="")
-    ownerid = models.ForeignKey(User, on_delete=models.CASCADE)
+    stationName = models.CharField(max_length=100, default="")
+
     def __str__(self):
-        return str(self.stationid)
+        return self.stationName
+
+
 class Firefighter(models.Model):
     id = models.AutoField(primary_key=True)
     firstName = models.CharField(max_length=25, default="")
@@ -19,8 +22,11 @@ class Firefighter(models.Model):
     isDriver = models.BooleanField(default=False)
     isSectionCommander = models.BooleanField(default=False)
     isActionCommander = models.BooleanField(default=False)
+
     def __str__(self):
-        return str(self.id)
+        return self.firstName + " " + self.lastName
+
+
 class Report(models.Model):
     id = models.AutoField(primary_key=True)
     stationid = models.CharField(max_length=10, default="")
@@ -44,3 +50,12 @@ class Report(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+
+class FirestationMember(models.Model):
+    id = models.AutoField(primary_key=True)
+    stationid = models.ForeignKey(Firestation, on_delete=models.CASCADE)
+    memberid = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self)

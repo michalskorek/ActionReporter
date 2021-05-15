@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+{% block content %}
+    <div style="text-align: center; margin-top:50px; width: 60%;margin-left: 20%;">
+
+    <h1>Wybierz remizę dla której chcesz stworzyć raport</h1>
+            {% for fireStation in fireStations %}
+                <a href="{% url "create-report" pk=fireStation.stationid %}" class="btn btn-secondary btn-lg btn-block">{{ fireStation.stationName}}</a>
+            {% endfor %}
+
+    </div>
+
+{% endblock %}

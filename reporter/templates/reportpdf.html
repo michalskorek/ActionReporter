@@ -16,7 +16,7 @@
     <META NAME="ScaleCrop" CONTENT="false">
     <META NAME="ShareDoc" CONTENT="false">
     <STYLE TYPE="text/css">
-        @font-face {font-family: Arial; src: url("arial.ttf"); }
+        @font-face {font-family: "Arial"; src: url("arial.ttf"); }
         <!--
         @page {
             margin-left: 0.24in;
@@ -113,7 +113,7 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=50
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span><span SIZE=3>
-                <b>DOWODCA SEKCJI</b>
+                <b>DOWÓDCA SEKCJI</b>
                 <br>
                 {{ report.sectionCommander }}
             </span></span></P>
@@ -131,7 +131,7 @@
         <TD COLSPAN=3 WIDTH=219 HEIGHT=43
             STYLE="border: 1px solid #00000a; padding-top: 0; padding-bottom: 0; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span><span SIZE=3>
-                <b>DOWODCA AKCJI</b>
+                <b>DOWÓDCA AKCJI</b>
                 <br>
                 {{ report.actionCommander }}</span></span></P>
         </TD>
@@ -170,7 +170,7 @@
         <TD COLSPAN=7 WIDTH=711 HEIGHT=248 VALIGN=TOP
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P><span><span SIZE=3>
-                <b>SZCZEGOLY ZDARZENIA</b>
+                <b>SZCZEGÓŁY ZDARZENIA</b>
                 <br>
                 {{ report.details }}
                 </span></span></P>
@@ -191,7 +191,7 @@
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span><span SIZE=3>
 
-                <b>GODZINA ZAKONCZENIA</b>
+                <b>GODZINA ZAKOŃCZENIA</b>
                 <br>
                 {{ report.actionEndTime | date:'H:i' }}
             </span></span></P>
@@ -201,13 +201,13 @@
             <P ALIGN=CENTER><span><span SIZE=3>
                 <b>STAN LICZNIKA</b>
                 <br>
-                {{ report.counter }}
+                {{ report.odometer }}
             </span></span></P>
         </TD>
         <TD ROWSPAN=2 COLSPAN=2 WIDTH=274
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in">
             <P ALIGN=CENTER><span><span SIZE=3>
-                <b>ODLEGLOSC OD MIEJSCA ZDARZENIA</b>
+                <b>ODLEGLOŚĆ OD MIEJSCA ZDARZENIA</b>
                 <br>
                 {{ report.distance }}
             </span></span></P>

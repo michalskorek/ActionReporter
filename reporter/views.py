@@ -2,12 +2,12 @@ from io import StringIO
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from .models import Report, Firefighter, Firestation
+from .models import Report, Firefighter, Firestation, FirestationMember
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import get_template
 from xhtml2pdf import pisa
-from .forms import ReportForm, LoginForm, RegistrationForm, FirefighterForm, FirestationForm
+from .forms import ReportForm, LoginForm, RegistrationForm, FirefighterForm, FirestationForm, FirestatiomMemberForm
 
 import datetime
 
@@ -16,56 +16,139 @@ def create_firefighter(request):
     if request.method == "POST":
         form = FirefighterForm(request.POST)
         if form.is_valid():
-            report = form.save(commit=False)
-            report.author = request.user
-            report.published_date = datetime.datetime.now()
-            report.save()
+            cd = form.cleaned_data
+
+            fireStation = Firestation.objects.filter(
+                firestationmember=FirestationMember.objects.filter(memberid=request.user).first(),
+                stationName=cd['stationid']).first()
+
+            Firefighter.objects.create(stationid=fireStation, firstName=cd['firstName'], lastName=cd['lastName'],
+                                       isDriver=cd['isDriver'], isSectionCommander=cd['isSectionCommander'],
+                                       isActionCommander=cd['isActionCommander'])
+
+            return render(request, "information.html",
+                          {'message': "Pomyślnie dodano nowego strażaka", 'return_button': True})
     else:
+        user = request.user
         form = FirefighterForm()
+        form.fields['stationid'].queryset = Firestation.objects.filter(
+            firestationmember=FirestationMember.objects.filter(memberid=user).first())
 
     return render(request, 'create_firefighter.html', {'form': form})
 
 
-def create_report(request):
-    drivers = Firefighter.objects.filter(isDriver=True)
-    sectionCommanders = Firefighter.objects.filter(isSectionCommander=True)
-    actionCommanders = Firefighter.objects.filter(isActionCommander=True)
-    if request.method == "POST":
-        form = ReportForm(request.POST)
-        if form.is_valid():
-            report = form.save(commit=False)
-            report.author = request.user
-            report.published_date = datetime.datetime.now()
-            report.save()
-    else:
-        form = ReportForm()
+def create_report_initial(request):
+    user = request.user
+    fireStations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
+    return render(request, 'create_report_initial.html', {'fireStations': fireStations})
 
-    return render(request, 'create_report.html',
-                  {'form': form, 'drivers': drivers, 'sectionCommanders': sectionCommanders,
-                   'actionCommanders': actionCommanders})
+
+def create_report(request, pk):
+    fireStation = Firestation.objects.filter(stationid=pk).first()
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = ReportForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            cd = form.cleaned_data
+            section =""
+            for val in cd['section']:
+                section+=str(val)+","
+            section = section[:-1]
+            Report.objects.create(
+                stationid=fireStation.stationid,
+                reportid=cd['reportid'],
+                departureTime=cd['departureTime'],
+                arrivalTime=cd['arrivalTime'],
+                actionEndTime=cd['actionEndTime'],
+                fireStationArrivalTime=cd['fireStationArrivalTime'],
+                incidentType=cd['incidentType'],
+                incidentPlace=cd['incidentPlace'],
+                sectionCommander=cd['sectionCommander'],
+                actionCommander=cd['actionCommander'],
+                driver=cd['driver'],
+                perpetrator=cd['perpetrator'],
+                victim=cd['victim'],
+                section=section,
+                details=cd['details'],
+                odometer=cd['odometer'],
+                distance=cd['distance'],
+                isLocked=False
+            )
+            return HttpResponse('Dodano')
+
+        # if a GET (or any other method) we'll create a blank form
+    else:
+        section = Firefighter.objects.filter(stationid=fireStation.stationid)
+        sectionCommanders = section.filter(isSectionCommander=True)
+        actionCommanders = section.filter(isActionCommander=True)
+        drivers = section.filter(isDriver=True)
+        lastReports = Report.objects.filter(stationid=pk)
+        if not lastReports:
+            lastId = 1
+        else:
+            lastId = lastReports.order_by('-reportid').first().reportid + 1
+        form = ReportForm(initial={'reportid': lastId})
+        form.fields['driver'].queryset = drivers
+        form.fields['section'].queryset = section
+        form.fields['actionCommander'].queryset = actionCommanders
+        form.fields['sectionCommander'].queryset = sectionCommanders
+
+    return render(request, 'create_report.html', {'form': form, 'fireStation': fireStation})
 
 
 def modify_report(request, pk):
     report = get_object_or_404(Report, pk=pk)
+    fireStation = Firestation.objects.filter(stationid=report.stationid).first()
     drivers = Firefighter.objects.filter(isDriver=True)
     sectionCommanders = Firefighter.objects.filter(isSectionCommander=True)
     actionCommanders = Firefighter.objects.filter(isActionCommander=True)
+
     if request.method == "POST":
-        form = ReportForm(request.POST, instance=report)
+        form = ReportForm(request.POST)
         if form.is_valid():
             report = form.save(commit=False)
+
             report.author = request.user
             report.published_date = datetime.datetime.now()
             report.save()
     else:
-        form = ReportForm(instance=report)
-    return render(request, 'create_report.html',
-                  {'form': form, 'drivers': drivers, 'sectionCommanders': sectionCommanders,
-                   'actionCommanders': actionCommanders})
+        section = Firefighter.objects.filter(stationid=fireStation.stationid)
+        sectionCommander = section.filter(isSectionCommander=True)
+        actionCommanders = section.filter(isActionCommander=True)
+        drivers = section.filter(isDriver=True)
+        previousSection=report.section.split(",")
+        selectedSection =[]
+        for firefighter in section:
+            if str(firefighter) in previousSection:
+                selectedSection.append(firefighter)
+        form = ReportForm(initial={
+            'reportid':report.reportid,
+            'departureTime':report.departureTime,
+            'arrivalTime':report.arrivalTime,
+            'actionEndTime':datetime.datetime.now(),
+            'fireStationArrivalTime':report.fireStationArrivalTime,
+            'incidentType':report.incidentType,
+            'incidentPlace':report.incidentPlace,
+            'sectionCommander':sectionCommanders,
+            'actionCommander':actionCommanders,
+            'driver':drivers,
+            'perpetrator':report.perpetrator,
+            'victim':report.victim,
+            'section':report.section,
+            'details':report.details,
+            'odometer':report.odometer,
+            'distance':report.distance
 
+        })
+        form.fields['section'].initial = selectedSection
+        print(form.fields['section'].initial)
+    return render(request, 'create_report.html', {'form': form, 'fireStation': fireStation })
 
 def reports_list(request):
-    reports = Report.objects.all()
+    user = request.user
+    stations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
+    reports = Report.objects.filter(stationid__in=stations)
     return render(request, "reports.html", {'reports': reports})
 
 
@@ -93,7 +176,7 @@ def report_render_pdf_view(request, *args, **kwargs):
     html = template.render(context)
     # create a pdf
     pisa_status = pisa.CreatePDF(html,
-         dest=response, encoding='UTF-8')
+                                 dest=response, encoding='UTF-8', path="./reporter/templates/")
     # if error then show some funy view
     if pisa_status.err:
         return HttpResponse('We had some errors <pre>' + html + '</pre>')
@@ -151,21 +234,41 @@ def user_registration(request):
 
 def profile(request):
     user = request.user
-    fireStations = Firestation.objects.filter(ownerid=user.id)
+    fireStations = Firestation.objects.filter(
+        stationid__in=FirestationMember.objects.filter(memberid=user).values("stationid"))
     firestationsEmpty = len(fireStations) == 0
-    return render(request, "profile.html", {"user": user, "fireStations": fireStations, "firestationsEmpty":firestationsEmpty})
+    return render(request, "profile.html",
+                  {"user": user, "fireStations": fireStations, "firestationsEmpty": firestationsEmpty})
+
 
 def create_firestation(request):
     if request.method == 'POST':
         form = FirestationForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            Firestation.objects.create(ownerid=request.user, stationName=cd["stationName"])
-            return render(request, "information.html", {'message': "Pomyślnie stworzono remizę", 'return_button':True})
+            newFirestation = Firestation.objects.create(stationName=cd["stationName"])
+            FirestationMember.objects.create(stationid=newFirestation, memberid=request.user)
+            return render(request, "information.html", {'message': "Pomyślnie stworzono remizę", 'return_button': True})
     else:
         form = FirestationForm()
         return render(request, "create_firestation.html", {'form': form})
-def firestation_details(request,pk):
+
+
+def firestation_details(request, pk):
     firestation = get_object_or_404(Firestation, pk=pk)
     firefighters = Firefighter.objects.filter(stationid=firestation)
-    return render(request, "firestation_details.html", {"firestation":firestation, "firefighters":firefighters})
+    firestationMembers = User.objects.filter(
+        id__in=FirestationMember.objects.filter(stationid=firestation).values("memberid"))
+    if request.method == 'POST':
+        form = FirestatiomMemberForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = User.objects.filter(email=cd["userEmail"]).first()
+            if user is not None:
+                FirestationMember.objects.create(stationid=firestation, memberid=user)
+                return render(request, "information.html",
+                              {"message": "Pomyślnie dodano nowego moderatora", "return_button": True})
+            return render(request, "information.html",
+                          {"message": "Nie istnieje użytkownik o podanym adresie email", "return_button": True})
+    return render(request, "firestation_details.html",
+                  {"firestation": firestation, "firefighters": firefighters, "firestationMembers": firestationMembers})

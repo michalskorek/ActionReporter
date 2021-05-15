@@ -1,7 +1,8 @@
 {% extends "index.html" %}
 {% block content %}
     <div style="margin-top:50px;margin-left:5%;">
-      <h1>Remiza {{ firestation.stationName }}</h1>
+      <h1>Remiza "{{ firestation.stationName }}"</h1>
+      <h3>Globalne ID remizy: {{ firestation.pk }}</h3>
     <p>Lista strażaków:</p>
     <ul>
     {% for firefighter in firefighters %}
@@ -9,5 +10,17 @@
         dowódca sekcji: {{ firefighter.isSectionCommander }}, dowódca akcji: {{ firefighter.isActionCommander }}</li>
     {% endfor %}
     </ul>
+    <h3>Moderatorzy remizy:</h3>
+    <ul>
+        {% for member in firestationMembers %}
+            <li>Nazwa użytkownika: {{ member.username }}, Imie i nazwisko: {{ member.first_name }} {{ member.last_name }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Dodaj nowego moderatora do remizy:</h3>
+     <form method="POST" class="post-form" style="border:1px solid black;padding:2%;">{% csrf_token %}
+         <p><label for="id_userEmail">Adres email użytkownika:</label>
+        <input type="text" name="userEmail" maxlength="1000" required id="id_userEmail"></p>
+        <button type="submit" class="save btn btn-primary">Dodaj</button>
+    </form>
     </div>
 {% endblock %}
