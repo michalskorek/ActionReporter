@@ -4,7 +4,9 @@
     <div style="margin-left:5%;width:90%;border:1px solid black; padding:1%;text-align: justify;">
         <h3><b>Status raportu: {% if report.isLocked %} <span style="color: red; ">ZAMKNIĘTY </span> {% else %} OTWARTY{% endif %}</b></h3>
         <p><a class="btn btn-primary" href="{% url 'render-to-pdf' pk=report.pk %}">Pobierz raport w formacie PDF</a></p>
-        <p><a class="btn btm-primary" href="{% url 'modify-report' pk=report.pk %}">Modyfikuj raport</a></p>
+        {% if not report.isLocked %}<p><a class="btn btn-secondary" href="{% url 'modify-report' pk=report.pk %}">Modyfikuj raport</a></p>
+            <p><a class="btn btn-danger" href="{% url 'lock-report' pk=report.pk %}">Zamknij raport</a></p>
+        {% endif %}
         <p><b>ID remizy:</b> {{ report.stationid }}</p>
         <p><b>ID raportu:</b> {{ report.reportid }}</p>
         <p><b>Czas wyjazdu:</b> {{ report.departureTime }}</p>

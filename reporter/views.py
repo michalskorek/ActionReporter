@@ -1,6 +1,7 @@
 from io import StringIO
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Report, Firefighter, Firestation, FirestationMember
 from django.shortcuts import render, get_object_or_404
@@ -11,7 +12,7 @@ from .forms import ReportForm, LoginForm, RegistrationForm, FirefighterForm, Fir
 
 import datetime
 
-
+@login_required
 def create_firefighter(request):
     if request.method == "POST":
         form = FirefighterForm(request.POST)
@@ -36,13 +37,13 @@ def create_firefighter(request):
 
     return render(request, 'create_firefighter.html', {'form': form})
 
-
+@login_required
 def create_report_initial(request):
     user = request.user
     fireStations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
     return render(request, 'create_report_initial.html', {'fireStations': fireStations})
 
-
+@login_required
 def create_report(request, pk):
     fireStation = Firestation.objects.filter(stationid=pk).first()
     if request.method == 'POST':
@@ -51,9 +52,9 @@ def create_report(request, pk):
         # check whether it's valid:
         if form.is_valid():
             cd = form.cleaned_data
-            section =""
+            section = ""
             for val in cd['section']:
-                section+=str(val)+","
+                section += str(val) + ","
             section = section[:-1]
             Report.objects.create(
                 stationid=fireStation.stationid,
@@ -75,7 +76,7 @@ def create_report(request, pk):
                 distance=cd['distance'],
                 isLocked=False
             )
-            return HttpResponse('Dodano')
+            return render(request, "information.html", {'message': "Pomyślnie dodano raport", 'return_button': True})
 
         # if a GET (or any other method) we'll create a blank form
     else:
@@ -87,7 +88,7 @@ def create_report(request, pk):
         if not lastReports:
             lastId = 1
         else:
-            lastId = lastReports.order_by('-reportid').first().reportid + 1
+            lastId = int(lastReports.order_by('-reportid').first().reportid) + 1
         form = ReportForm(initial={'reportid': lastId})
         form.fields['driver'].queryset = drivers
         form.fields['section'].queryset = section
@@ -96,73 +97,122 @@ def create_report(request, pk):
 
     return render(request, 'create_report.html', {'form': form, 'fireStation': fireStation})
 
-
+@login_required
 def modify_report(request, pk):
     report = get_object_or_404(Report, pk=pk)
     fireStation = Firestation.objects.filter(stationid=report.stationid).first()
-    drivers = Firefighter.objects.filter(isDriver=True)
-    sectionCommanders = Firefighter.objects.filter(isSectionCommander=True)
-    actionCommanders = Firefighter.objects.filter(isActionCommander=True)
+    userStations = Firestation.objects.filter(
+        firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+    if fireStation not in userStations:
+        return render(request, "information.html",
+                      {'message': "Dostęp zabroniony", 'return_button': True})
 
     if request.method == "POST":
         form = ReportForm(request.POST)
+        # check whether it's valid:
         if form.is_valid():
-            report = form.save(commit=False)
-
-            report.author = request.user
-            report.published_date = datetime.datetime.now()
-            report.save()
+            cd = form.cleaned_data
+            section = ""
+            for val in cd['section']:
+                section += str(val) + ","
+            section = section[:-1]
+            Report.objects.filter(pk=pk).update(
+                stationid=fireStation.stationid,
+                reportid=cd['reportid'],
+                departureTime=cd['departureTime'],
+                arrivalTime=cd['arrivalTime'],
+                actionEndTime=cd['actionEndTime'],
+                fireStationArrivalTime=cd['fireStationArrivalTime'],
+                incidentType=cd['incidentType'],
+                incidentPlace=cd['incidentPlace'],
+                sectionCommander=str(cd['sectionCommander']),
+                actionCommander=str(cd['actionCommander']),
+                driver=str(cd['driver']),
+                perpetrator=cd['perpetrator'],
+                victim=cd['victim'],
+                section=section,
+                details=cd['details'],
+                odometer=cd['odometer'],
+                distance=cd['distance'],
+                isLocked=False
+            )
+            return render(request, "information.html",
+                          {'message': "Pomyślnie zmodyfikowano raport", 'return_button': True})
     else:
         section = Firefighter.objects.filter(stationid=fireStation.stationid)
-        sectionCommander = section.filter(isSectionCommander=True)
+        sectionCommanders = section.filter(isSectionCommander=True)
         actionCommanders = section.filter(isActionCommander=True)
         drivers = section.filter(isDriver=True)
-        previousSection=report.section.split(",")
-        selectedSection =[]
+        previousSection = report.section.split(",")
+        selectedSection = []
         for firefighter in section:
             if str(firefighter) in previousSection:
                 selectedSection.append(firefighter)
+
         form = ReportForm(initial={
-            'reportid':report.reportid,
-            'departureTime':report.departureTime,
-            'arrivalTime':report.arrivalTime,
-            'actionEndTime':datetime.datetime.now(),
-            'fireStationArrivalTime':report.fireStationArrivalTime,
-            'incidentType':report.incidentType,
-            'incidentPlace':report.incidentPlace,
-            'sectionCommander':sectionCommanders,
-            'actionCommander':actionCommanders,
-            'driver':drivers,
-            'perpetrator':report.perpetrator,
-            'victim':report.victim,
-            'section':report.section,
-            'details':report.details,
-            'odometer':report.odometer,
-            'distance':report.distance
+            'reportid': report.reportid,
+            'departureTime': report.departureTime,
+            'arrivalTime': report.arrivalTime,
+            'actionEndTime': report.actionEndTime,
+            'fireStationArrivalTime': report.fireStationArrivalTime,
+            'incidentType': report.incidentType,
+            'incidentPlace': report.incidentPlace,
+            'sectionCommander': sectionCommanders,
+            'actionCommander': actionCommanders,
+            'driver': drivers,
+            'perpetrator': report.perpetrator,
+            'victim': report.victim,
+            'section': report.section,
+            'details': report.details,
+            'odometer': report.odometer,
+            'distance': report.distance
 
         })
-        form.fields['section'].initial = selectedSection
-        print(form.fields['section'].initial)
-    return render(request, 'create_report.html', {'form': form, 'fireStation': fireStation })
+        form.fields['driver'].queryset = drivers
+        form.fields['actionCommander'].queryset = actionCommanders
+        form.fields['sectionCommander'].queryset = sectionCommanders
+        form.fields['section'].queryset = section
+    return render(request, 'modify_report.html', {'form': form, 'fireStation': fireStation, 'report': report,
+                                                  'departureTime': report.departureTime.strftime("%Y-%m-%dT%H:%M"),
+                                                  'arrivalTime': report.arrivalTime.strftime("%Y-%m-%dT%H:%M"),
+                                                  'actionEndTime': report.actionEndTime.strftime("%Y-%m-%dT%H:%M"),
+                                                  'fireStationArrivalTime': report.fireStationArrivalTime.strftime(
+                                                      "%Y-%m-%dT%H:%M"),
+                                                  'driver': report.driver})
 
+@login_required
 def reports_list(request):
     user = request.user
     stations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
     reports = Report.objects.filter(stationid__in=stations)
     return render(request, "reports.html", {'reports': reports})
 
-
+@login_required
 def report_details(request, pk):
     report = get_object_or_404(Report, pk=pk)
+    userStations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+    station = Firestation.objects.filter(stationid=report.stationid).first()
+    if station not in userStations:
+        return render(request, "information.html",
+                      {'message': "Dostęp zabroniony", 'return_button': True})
     firefighters = report.section.split(",")
     return render(request, 'report.html', {'report': report, 'firefighters': firefighters})
-
-
+@login_required
+def lock_report(request,pk):
+    report = get_object_or_404(Report, pk=pk)
+    userStations = Firestation.objects.filter(
+        firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+    station = Firestation.objects.filter(stationid=report.stationid).first()
+    if station not in userStations:
+        return render(request, "information.html",
+                      {'message': "Dostęp zabroniony", 'return_button': True})
+    Report.objects.filter(pk=pk).update(isLocked=True)
+    return render(request, "information.html",
+                  {'message': "Pomyślnie zamknięto raport", 'return_button': True})
 def mainpage(request):
-    authenticated = request.user.is_authenticated
     return render(request, "index.html")
 
-
+@login_required
 def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
     report = get_object_or_404(Report, pk=pk)
@@ -205,7 +255,7 @@ def user_login(request):
         form = LoginForm()
         return render(request, 'login.html', {'form': form})
 
-
+@login_required
 def user_logout(request):
     logout(request)
     return render(request, 'information.html', {'message': "Wylogowano pomyślnie", 'return_button': False})
@@ -231,7 +281,7 @@ def user_registration(request):
         form = RegistrationForm()
         return render(request, "register.html", {'form': form})
 
-
+@login_required
 def profile(request):
     user = request.user
     fireStations = Firestation.objects.filter(
@@ -240,7 +290,7 @@ def profile(request):
     return render(request, "profile.html",
                   {"user": user, "fireStations": fireStations, "firestationsEmpty": firestationsEmpty})
 
-
+@login_required
 def create_firestation(request):
     if request.method == 'POST':
         form = FirestationForm(request.POST)
@@ -253,7 +303,7 @@ def create_firestation(request):
         form = FirestationForm()
         return render(request, "create_firestation.html", {'form': form})
 
-
+@login_required
 def firestation_details(request, pk):
     firestation = get_object_or_404(Firestation, pk=pk)
     firefighters = Firefighter.objects.filter(stationid=firestation)

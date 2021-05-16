@@ -3,6 +3,9 @@
 {% block content %}
 {% load widget_tweaks %}
 
+    {% if report is not None %}
+
+{% endif %}
     <h1 style="margin:2%; text-align: center">Stwórz/zmodyfikuj nowy raport</h1>
     <h2 style="margin:2%; text-align: center">Remiza: {{ fireStation.stationName }}</h2>
 <form method="post" novalidate style="width:60%;margin-left: 20%;">
@@ -19,7 +22,6 @@
         {% render_field field  %}
         </div>
     {% elif field.field.widget.input_type == "datetime-local" %}
-        {{ field.label_tag }}
         {% render_field field class="form-control" %}
     {% else %}
         {{ field.label_tag }}
@@ -33,5 +35,12 @@
 
   <button type="submit" class="btn btn-primary">Zapisz</button>
 </form>
+    <script defer>
+    document.getElementById("id_departureTime").value = "{{ departureTime }}"
+    document.getElementById("id_arrivalTime").value = "{{ arrivalTime }}"
+    document.getElementById("id_actionEndTime").value = "{{ actionEndTime }}"
+    document.getElementById("id_fireStationArrivalTime").value = "{{ fireStationArrivalTime }}"
+    document.getElementById("id_driver").value = "{{ driver }}"
 
+</script>
 {% endblock %}
