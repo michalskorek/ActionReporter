@@ -5,7 +5,7 @@
 
     <h1 style="margin:2%; text-align: center">Stwórz/zmodyfikuj nowy raport</h1>
     <h2 style="margin:2%; text-align: center">Remiza: {{ fireStation.stationName }}</h2>
-<form method="post" novalidate style="width:60%;margin-left: 20%;">
+<form method="post" novalidate style="width:60%;margin-left: 20%;margin-bottom: 100px;">
   {% csrf_token %}
 
   {% for hidden_field in form.hidden_fields %}
@@ -31,7 +31,27 @@
     </div>
   {% endfor %}
 
-  <button type="submit" class="btn btn-primary">Zapisz</button>
+  <button type="submit" class="btn btn-primary btn-lg">Zapisz</button>
 </form>
+<script defer>
+    function updateLocation(){
+            var options = {
+              enableHighAccuracy: true,
+              timeout: 5000,
+              maximumAge: 0
+            };
 
+            function success(pos) {
+              var crd = pos.coords;
+              document.getElementById("id_incidentPlace").value = crd.latitude.toFixed(3)+"°N "+ crd.longitude.toFixed(3)+"°E";
+            }
+
+            function error(err) {
+              console.warn(`ERROR(${err.code}): ${err.message}`);
+            }
+
+            navigator.geolocation.getCurrentPosition(success, error, options);
+    }
+        document.getElementById("id_incidentPlace").parentNode.innerHTML+="<input type='button' class='btn btn-info' value='Aktualne położenie' onclick='updateLocation()'>"
+</script>
 {% endblock %}

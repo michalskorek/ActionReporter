@@ -12,6 +12,7 @@ from .forms import ReportForm, LoginForm, RegistrationForm, FirefighterForm, Fir
 
 import datetime
 
+
 @login_required
 def create_firefighter(request):
     if request.method == "POST":
@@ -37,11 +38,13 @@ def create_firefighter(request):
 
     return render(request, 'create_firefighter.html', {'form': form})
 
+
 @login_required
 def create_report_initial(request):
     user = request.user
     fireStations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
     return render(request, 'create_report_initial.html', {'fireStations': fireStations})
+
 
 @login_required
 def create_report(request, pk):
@@ -96,6 +99,7 @@ def create_report(request, pk):
         form.fields['sectionCommander'].queryset = sectionCommanders
 
     return render(request, 'create_report.html', {'form': form, 'fireStation': fireStation})
+
 
 @login_required
 def modify_report(request, pk):
@@ -183,6 +187,7 @@ def modify_report(request, pk):
                                                   'actionCommander': report.actionCommander,
                                                   'section': report.section})
 
+
 @login_required
 def reports_list(request):
     user = request.user
@@ -190,18 +195,22 @@ def reports_list(request):
     reports = Report.objects.filter(stationid__in=stations)
     return render(request, "reports.html", {'reports': reports})
 
+
 @login_required
 def report_details(request, pk):
     report = get_object_or_404(Report, pk=pk)
-    userStations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+    userStations = Firestation.objects.filter(
+        firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
     station = Firestation.objects.filter(stationid=report.stationid).first()
     if station not in userStations:
         return render(request, "information.html",
                       {'message': "Dostęp zabroniony", 'return_button': True})
     firefighters = report.section.split(",")
     return render(request, 'report.html', {'report': report, 'firefighters': firefighters})
+
+
 @login_required
-def lock_report(request,pk):
+def lock_report(request, pk):
     report = get_object_or_404(Report, pk=pk)
     userStations = Firestation.objects.filter(
         firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
@@ -212,15 +221,18 @@ def lock_report(request,pk):
     Report.objects.filter(pk=pk).update(isLocked=True)
     return render(request, "information.html",
                   {'message': "Pomyślnie zamknięto raport", 'return_button': True})
+
+
 def mainpage(request):
     return render(request, "index.html")
+
 
 @login_required
 def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
     report = get_object_or_404(Report, pk=pk)
     template_path = "reportpdf.html"
-    context = {'report': report, 'section':report.section.split(",")}
+    context = {'report': report, 'section': report.section.split(",")}
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
     #  response['Content-Disposition'] = 'attachment; filename="report.pdf"'
@@ -258,6 +270,7 @@ def user_login(request):
         form = LoginForm()
         return render(request, 'login.html', {'form': form})
 
+
 @login_required
 def user_logout(request):
     logout(request)
@@ -284,6 +297,7 @@ def user_registration(request):
         form = RegistrationForm()
         return render(request, "register.html", {'form': form})
 
+
 @login_required
 def profile(request):
     user = request.user
@@ -292,6 +306,7 @@ def profile(request):
     firestationsEmpty = len(fireStations) == 0
     return render(request, "profile.html",
                   {"user": user, "fireStations": fireStations, "firestationsEmpty": firestationsEmpty})
+
 
 @login_required
 def create_firestation(request):
@@ -305,6 +320,7 @@ def create_firestation(request):
     else:
         form = FirestationForm()
         return render(request, "create_firestation.html", {'form': form})
+
 
 @login_required
 def firestation_details(request, pk):
@@ -325,7 +341,10 @@ def firestation_details(request, pk):
                           {"message": "Nie istnieje użytkownik o podanym adresie email", "return_button": True})
     return render(request, "firestation_details.html",
                   {"firestation": firestation, "firefighters": firefighters, "firestationMembers": firestationMembers})
+
+
 @login_required
-def delete_firefighter(request,pk):
+def delete_firefighter(request, pk):
     Firefighter.objects.get(pk=pk).delete()
-    return render(request, "information.html", {'message': "Pomyślnie usunięto strażaka z remizy", 'return_button': True})
+    return render(request, "information.html",
+                  {'message': "Pomyślnie usunięto strażaka z remizy", 'return_button': True})

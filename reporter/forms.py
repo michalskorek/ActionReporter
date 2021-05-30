@@ -1,8 +1,7 @@
 from django import forms
-from django.contrib.auth.models import User
 
-from .models import Report, Firestation, FirestationMember
 from .models import Firefighter
+from .models import Firestation
 
 
 class ReportForm(forms.Form):
