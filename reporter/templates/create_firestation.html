@@ -1,8 +1,9 @@
 {% extends "index.html" %}
 {% load widget_tweaks %}
 {% block content %}
-    <h1>Stwórz nową remizę</h1>
+
   <form method="post" novalidate style="width:60%;margin-left: 20%;">
+  <h1 style="margin-top:50px; margin-bottom: 50px;">Stwórz nową remizę</h1>
   {% csrf_token %}
 
   {% for hidden_field in form.hidden_fields %}

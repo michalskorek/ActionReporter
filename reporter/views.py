@@ -249,6 +249,8 @@ def report_render_pdf_view(request, *args, **kwargs):
 
 
 def user_login(request):
+    if request.user.is_authenticated:
+        return mainpage(request)
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -278,6 +280,8 @@ def user_logout(request):
 
 
 def user_registration(request):
+    if request.user.is_authenticated:
+        return mainpage(request)
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():

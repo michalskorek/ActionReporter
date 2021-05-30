@@ -1,13 +1,17 @@
 {% extends "index.html" %}
 {% block content %}
+    {% load widget_tweaks %}
     <div style="text-align: center; width:99%; margin-top:50px;">
      <h1>Rejestracja</h1>
  <p>Wypełnij poniższy formularz, aby się zarejestrować:</p>
- <form action="." method="post">
- {{ form.as_p }}
- {% csrf_token %}
- <p><input type="submit" value="Zarejestruj się"></p>
- </form>
+    <form action="." method="post" style="width:40%;margin-left: 30%; text-align: left;">
+    {% csrf_token %}
+        {% for field in form.visible_fields %}
+            {{ field.label_tag }}
+            {% render_field field class="form-control"%}
+        {% endfor %}
+    <input type="submit" class="btn btn-primary btn-lg" style="margin-top:10px;"value="Zaloguj">
+    </form>
     </div>
 
 {% endblock %}
