@@ -37,17 +37,17 @@ class FirefighterForm(forms.Form):
     isActionCommander = forms.BooleanField(label="Jest dowódcą akcji", initial=False, required=False)
 
 class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(label="Nazwa użytkownika")
+    password = forms.CharField(widget=forms.PasswordInput, label="Hasło")
 
 
 class RegistrationForm(forms.Form):
-    username = forms.CharField()
-    firstName = forms.CharField()
-    lastName = forms.CharField()
-    email = forms.CharField(widget=forms.EmailInput)
-    password = forms.CharField(widget=forms.PasswordInput)
-    passwordConfirmation = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(label="Nazwa użytkownika")
+    firstName = forms.CharField(label="Imie")
+    lastName = forms.CharField(label="Nazwisko")
+    email = forms.CharField(widget=forms.EmailInput, label="Adres email")
+    password = forms.CharField(widget=forms.PasswordInput, label="Hasło")
+    passwordConfirmation = forms.CharField(widget=forms.PasswordInput, label="Potwierdź hasło")
 
 
 class FirestationForm(forms.Form):

@@ -165,7 +165,7 @@ def modify_report(request, pk):
             'section': report.section,
             'details': report.details,
             'odometer': report.odometer,
-            'distance': report.distance
+            'distance': int(report.distance)
 
         })
         form.fields['driver'].queryset = drivers
@@ -178,7 +178,10 @@ def modify_report(request, pk):
                                                   'actionEndTime': report.actionEndTime.strftime("%Y-%m-%dT%H:%M"),
                                                   'fireStationArrivalTime': report.fireStationArrivalTime.strftime(
                                                       "%Y-%m-%dT%H:%M"),
-                                                  'driver': report.driver})
+                                                  'driver': report.driver,
+                                                  'sectionCommander': report.sectionCommander,
+                                                  'actionCommander': report.actionCommander,
+                                                  'section': report.section})
 
 @login_required
 def reports_list(request):
@@ -217,7 +220,7 @@ def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
     report = get_object_or_404(Report, pk=pk)
     template_path = "reportpdf.html"
-    context = {'report': report}
+    context = {'report': report, 'section':report.section.split(",")}
     # Create a Django response object, and specify content_type as pdf
     response = HttpResponse(content_type='application/pdf')
     #  response['Content-Disposition'] = 'attachment; filename="report.pdf"'
@@ -322,3 +325,7 @@ def firestation_details(request, pk):
                           {"message": "Nie istnieje użytkownik o podanym adresie email", "return_button": True})
     return render(request, "firestation_details.html",
                   {"firestation": firestation, "firefighters": firefighters, "firestationMembers": firestationMembers})
+@login_required
+def delete_firefighter(request,pk):
+    Firefighter.objects.get(pk=pk).delete()
+    return render(request, "information.html", {'message': "Pomyślnie usunięto strażaka z remizy", 'return_button': True})

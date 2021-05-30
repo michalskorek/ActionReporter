@@ -17,5 +17,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('create-firestation/',views.create_firestation,name='create-firestation'),
     path('firestations/<pk>', views.firestation_details, name="firestation-details"),
-    path('accounts/login/', views.user_login, name='accounts-login')
+    path('accounts/login/', views.user_login, name='accounts-login'),
+    path('firefighters/<pk>/delete', views.delete_firefighter, name='delete-firefighter')
 ]

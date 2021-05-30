@@ -15,6 +15,7 @@
     {{ hidden_field }}
   {% endfor %}
   {% for field in form.visible_fields %}
+
     <div class="form-group">
     {% if field.field.widget.input_type == "checkbox" %}
               {{ field.label_tag }}
@@ -41,6 +42,35 @@
     document.getElementById("id_actionEndTime").value = "{{ actionEndTime }}"
     document.getElementById("id_fireStationArrivalTime").value = "{{ fireStationArrivalTime }}"
     document.getElementById("id_driver").value = "{{ driver }}"
+    var section = "{{ section }}"
+    section = section.split(",")
+    for(let firefighter of document.getElementById("id_section").querySelectorAll("li")) {
+        if(section.includes(firefighter.innerText.slice(1))) firefighter.firstChild.firstChild.checked = true;
+    }
+    var drivers = document.getElementById("id_driver")
+    var driver = "{{ driver }}"
+    for(let potentialDriver of drivers.querySelectorAll("option")) {
+        if(potentialDriver.firstChild.textContent === driver) {
+            drivers.value = potentialDriver.value;
+            break;
+        }
+    }
+    var sectionCommanders = document.getElementById("id_sectionCommander")
+    var sectionCommander = "{{ sectionCommander }}"
+        for(let potentialSectionCommander of sectionCommanders.querySelectorAll("option")) {
+        if(potentialSectionCommander.firstChild.textContent === sectionCommander) {
+            sectionCommanders.value = potentialSectionCommander.value;
+            break;
+        }
+    }
+    var actionCommanders = document.getElementById("id_actionCommander")
+    var actionCommander = "{{ actionCommander }}"
+        for(let potentialActionCommander of actionCommanders.querySelectorAll("option")) {
+        if(potentialActionCommander.firstChild.textContent === actionCommander) {
+            actionCommanders.value = potentialActionCommander.value;
+            break;
+        }
+    }
 
 </script>
 {% endblock %}

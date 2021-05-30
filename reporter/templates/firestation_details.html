@@ -6,8 +6,11 @@
     <p>Lista strażaków:</p>
     <ul>
     {% for firefighter in firefighters %}
-        <li>{{ firefighter.firstName }} {{ firefighter.lastName }}, kierowca: {{ firefighter.isDriver }},
-        dowódca sekcji: {{ firefighter.isSectionCommander }}, dowódca akcji: {{ firefighter.isActionCommander }}</li>
+        <li>{{ firefighter.firstName }} {{ firefighter.lastName }},
+            kierowca: {% if firefighter.isDriver %}&#9989; {% else %}&#10060;{% endif %},
+        dowódca sekcji: {% if firefighter.isSectionCommander %}&#9989; {% else %}&#10060;{% endif %},
+            dowódca akcji: {% if firefighter.isActionCommander %}&#9989; {% else %}&#10060;{% endif %}
+        <a class="btn btn-danger btn-sm" href={% url 'delete-firefighter' pk=firefighter.pk %}>Usuń</a></li>
     {% endfor %}
     </ul>
     <h3>Moderatorzy remizy:</h3>

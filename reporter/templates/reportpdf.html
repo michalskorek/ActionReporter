@@ -120,11 +120,16 @@
         </TD>
         <TD ROWSPAN=5 COLSPAN=4 WIDTH=478
             STYLE="border: 1px solid #00000a; padding-top: 0in; padding-bottom: 0in; padding-left: 0.08in; padding-right: 0.08in;">
-            <P><span><span SIZE=3>
+            <P><span SIZE=3>
                 <b>SEKCJA</b>
                 <br>
-                {{ report.section }}
-            </span></span></P>
+                <ul>
+            {% for firefighter in section %}
+                <li>{{ firefighter }}</li>
+            {% endfor %}
+        </ul>
+            </span>
+            </P>
         </TD>
     </TR>
     <TR VALIGN=TOP>
