@@ -8,7 +8,7 @@ from django.utils import timezone
 
 class Firestation(models.Model):
     stationid = models.AutoField(primary_key=True)
-    stationName = models.CharField(max_length=100, default="")
+    stationName = models.TextField(default="")
 
     def __str__(self):
         return self.stationName
@@ -16,8 +16,8 @@ class Firestation(models.Model):
 
 class Firefighter(models.Model):
     id = models.AutoField(primary_key=True)
-    firstName = models.CharField(max_length=25, default="")
-    lastName = models.CharField(max_length=25, default="")
+    firstName = models.TextField(default="")
+    lastName = models.TextField(default="")
     stationid = models.ForeignKey(Firestation, on_delete=models.CASCADE)
     isDriver = models.BooleanField(default=False)
     isSectionCommander = models.BooleanField(default=False)
