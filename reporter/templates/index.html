@@ -20,7 +20,8 @@
       <li class="nav-item active">
         <a class="nav-link" href="{% url 'index' %}">Strona główna</a>
       </li>
-      <li class="nav-item">
+        {% if request.user.is_authenticated %}
+             <li class="nav-item">
         <a class="nav-link" href={% url 'reports' %}>Raporty</a>
       </li>
       <li class="nav-item">
@@ -29,6 +30,7 @@
          <li class="nav-item">
         <a class="nav-link" href={% url 'create-firefighter' %}>Nowy strażak</a>
       </li>
+        {% endif %}
     </ul>
       <ul class="nav navbar-nav navbar-right">
           {% if not request.user.is_authenticated %}
