@@ -34,7 +34,7 @@ def create_firefighter(request):
         user = request.user
         form = FirefighterForm()
         form.fields['stationid'].queryset = Firestation.objects.filter(
-            firestationmember=FirestationMember.objects.filter(memberid=user).first())
+        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
 
     return render(request, 'create_firefighter.html', {'form': form})
 
@@ -42,8 +42,9 @@ def create_firefighter(request):
 @login_required
 def create_report_initial(request):
     user = request.user
-    fireStations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
-    return render(request, 'create_report_initial.html', {'fireStations': fireStations})
+    userStations = Firestation.objects.filter(
+        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
+    return render(request, 'create_report_initial.html', {'fireStations': userStations})
 
 
 @login_required
@@ -106,7 +107,7 @@ def modify_report(request, pk):
     report = get_object_or_404(Report, pk=pk)
     fireStation = Firestation.objects.filter(stationid=report.stationid).first()
     userStations = Firestation.objects.filter(
-        firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
     if fireStation not in userStations:
         return render(request, "information.html",
                       {'message': "Dostęp zabroniony", 'return_button': True})
@@ -200,7 +201,7 @@ def reports_list(request):
 def report_details(request, pk):
     report = get_object_or_404(Report, pk=pk)
     userStations = Firestation.objects.filter(
-        firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
     station = Firestation.objects.filter(stationid=report.stationid).first()
     if station not in userStations:
         return render(request, "information.html",
@@ -213,7 +214,7 @@ def report_details(request, pk):
 def lock_report(request, pk):
     report = get_object_or_404(Report, pk=pk)
     userStations = Firestation.objects.filter(
-        firestationmember=FirestationMember.objects.filter(memberid=request.user).first())
+        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
     station = Firestation.objects.filter(stationid=report.stationid).first()
     if station not in userStations:
         return render(request, "information.html",
