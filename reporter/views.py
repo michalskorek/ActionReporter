@@ -22,7 +22,6 @@ def create_firefighter(request):
 
             fireStation = Firestation.objects.filter(
                 stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid")).filter(stationName=cd['stationid']).first()
-            print(fireStation)
             Firefighter.objects.create(stationid=fireStation, firstName=cd['firstName'], lastName=cd['lastName'],
                                        isDriver=cd['isDriver'], isSectionCommander=cd['isSectionCommander'],
                                        isActionCommander=cd['isActionCommander'])
