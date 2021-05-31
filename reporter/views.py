@@ -21,9 +21,8 @@ def create_firefighter(request):
             cd = form.cleaned_data
 
             fireStation = Firestation.objects.filter(
-                firestationmember=FirestationMember.objects.filter(memberid=request.user).first(),
-                stationName=cd['stationid']).first()
-
+                stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid")).filter(stationName=cd['stationid']).first()
+            print(fireStation)
             Firefighter.objects.create(stationid=fireStation, firstName=cd['firstName'], lastName=cd['lastName'],
                                        isDriver=cd['isDriver'], isSectionCommander=cd['isSectionCommander'],
                                        isActionCommander=cd['isActionCommander'])
@@ -192,8 +191,9 @@ def modify_report(request, pk):
 @login_required
 def reports_list(request):
     user = request.user
-    stations = Firestation.objects.filter(firestationmember=FirestationMember.objects.filter(memberid=user).first())
-    reports = Report.objects.filter(stationid__in=stations)
+    userStations = Firestation.objects.filter(
+        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
+    reports = Report.objects.filter(stationid__in=userStations)
     return render(request, "reports.html", {'reports': reports})
 
 
@@ -333,6 +333,7 @@ def firestation_details(request, pk):
     firefighters = Firefighter.objects.filter(stationid=firestation)
     firestationMembers = User.objects.filter(
         id__in=FirestationMember.objects.filter(stationid=firestation).values("memberid"))
+
     if request.method == 'POST':
         form = FirestatiomMemberForm(request.POST)
         if form.is_valid():

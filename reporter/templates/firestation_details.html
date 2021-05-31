@@ -6,7 +6,7 @@
     <p>Lista strażaków:</p>
     <ul>
     {% for firefighter in firefighters %}
-        <li>{{ firefighter.firstName }} {{ firefighter.lastName }},
+        <li style="margin-top:10px; margin-bottom: 10px;">{{ firefighter.firstName }} {{ firefighter.lastName }},
             kierowca: {% if firefighter.isDriver %}&#9989; {% else %}&#10060;{% endif %},
         dowódca sekcji: {% if firefighter.isSectionCommander %}&#9989; {% else %}&#10060;{% endif %},
             dowódca akcji: {% if firefighter.isActionCommander %}&#9989; {% else %}&#10060;{% endif %}
@@ -16,7 +16,7 @@
     <h3>Moderatorzy remizy:</h3>
     <ul>
         {% for member in firestationMembers %}
-            <li>Nazwa użytkownika: {{ member.username }}, Imie i nazwisko: {{ member.first_name }} {{ member.last_name }}</li>
+            <li style="margin-bottom: 10px; margin-top: 10px;">Nazwa użytkownika: {{ member.username }}, Imie i nazwisko: {{ member.first_name }} {{ member.last_name }}</li>
         {% endfor %}
     </ul>
     <h3>Dodaj nowego moderatora do remizy:</h3>

@@ -3,6 +3,7 @@
         <h1 style="text-align: center; margin-top:50px;">Twoje raporty</h1>
     <table  class="table" style="width:90%;margin-left:5%;margin-top:2%;">
   <tr>
+      <th>ID remizy</th>
       <th>ID raportu</th>
       <th>Miejsce zdarzenia</th>
       <th>Wyjazd</th>
@@ -14,6 +15,7 @@
   </tr>
   {% for report in reports %}
       <tr>
+      <th>{{ report.stationid }}</th>
       <th>{{ report.reportid }}</th>
       <th>{{ report.incidentPlace }}</th>
       <th>{{ report.departureTime |date:'Y-m-d H:i'}}</th>

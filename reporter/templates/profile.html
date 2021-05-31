@@ -15,7 +15,7 @@
     {% if not firestationsEmpty %}
         <ul>
         {% for firestation in fireStations %}
-            <li>{{ firestation.stationName }} <a class="btn btn-secondary" href={% url "firestation-details" pk=firestation.pk %}>
+            <li style="margin-top:10px; margin-bottom: 10px;">{{ firestation.stationName }} <a class="btn btn-secondary" href={% url "firestation-details" pk=firestation.pk %}>
                 Szczegóły
             </a></li>
         {% endfor %}
