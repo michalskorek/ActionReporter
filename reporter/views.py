@@ -1,5 +1,3 @@
-from io import StringIO
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -10,7 +8,41 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 from .forms import ReportForm, LoginForm, RegistrationForm, FirefighterForm, FirestationForm, FirestatiomMemberForm
 
-import datetime
+
+def getUserFirestationByName(user, name):
+    return Firestation.objects.filter(
+        stationid__in=FirestationMember.objects.filter(memberid=user).values("stationid")).filter(
+        stationName=name).first()
+
+
+def getUserFirestations(user):
+    return Firestation.objects.filter(
+        stationid__in=FirestationMember.objects.filter(memberid=user).values("stationid"))
+
+
+def getFirestation(id):
+    return Firestation.objects.filter(stationid=id).first()
+
+
+def getFirestationSection(station):
+    return Firefighter.objects.filter(stationid=station)
+
+
+def getFirestationReports(station):
+    return Report.objects.filter(stationid=station)
+
+
+def getReport(id):
+    return get_object_or_404(Report, pk=id)
+
+
+def lockReport(id):
+    Report.objects.filter(pk=id).update(isLocked=True)
+
+
+def getFirestationMembers(station):
+    return User.objects.filter(
+        id__in=FirestationMember.objects.filter(stationid=station).values("memberid"))
 
 
 @login_required
@@ -19,35 +51,28 @@ def create_firefighter(request):
         form = FirefighterForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-
-            fireStation = Firestation.objects.filter(
-                stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid")).filter(stationName=cd['stationid']).first()
+            fireStation = getUserFirestationByName(request.user, cd['stationid'])
             Firefighter.objects.create(stationid=fireStation, firstName=cd['firstName'], lastName=cd['lastName'],
                                        isDriver=cd['isDriver'], isSectionCommander=cd['isSectionCommander'],
                                        isActionCommander=cd['isActionCommander'])
-
             return render(request, "information.html",
                           {'message': "Pomyślnie dodano nowego strażaka", 'return_button': True})
     else:
-        user = request.user
         form = FirefighterForm()
-        form.fields['stationid'].queryset = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
+        form.fields['stationid'].queryset = getUserFirestations(request.user)
 
     return render(request, 'create_firefighter.html', {'form': form})
 
 
 @login_required
 def create_report_initial(request):
-    user = request.user
-    userStations = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
-    return render(request, 'create_report_initial.html', {'fireStations': userStations})
+    fireStations = getUserFirestations(request.user)
+    return render(request, 'create_report_initial.html', {'fireStations': fireStations})
 
 
 @login_required
 def create_report(request, pk):
-    fireStation = Firestation.objects.filter(stationid=pk).first()
+    firestation = getFirestation(pk)
     if request.method == 'POST':
         # create a form instance and populate it with data from the request:
         form = ReportForm(request.POST)
@@ -59,7 +84,7 @@ def create_report(request, pk):
                 section += str(val) + ","
             section = section[:-1]
             Report.objects.create(
-                stationid=fireStation.stationid,
+                stationid=firestation.stationid,
                 reportid=cd['reportid'],
                 departureTime=cd['departureTime'],
                 arrivalTime=cd['arrivalTime'],
@@ -82,11 +107,11 @@ def create_report(request, pk):
 
         # if a GET (or any other method) we'll create a blank form
     else:
-        section = Firefighter.objects.filter(stationid=fireStation.stationid)
+        section = getFirestationSection(firestation.stationid)
         sectionCommanders = section.filter(isSectionCommander=True)
         actionCommanders = section.filter(isActionCommander=True)
         drivers = section.filter(isDriver=True)
-        lastReports = Report.objects.filter(stationid=pk)
+        lastReports = getFirestationReports(pk)
         if not lastReports:
             lastId = 1
         else:
@@ -97,16 +122,15 @@ def create_report(request, pk):
         form.fields['actionCommander'].queryset = actionCommanders
         form.fields['sectionCommander'].queryset = sectionCommanders
 
-    return render(request, 'create_report.html', {'form': form, 'fireStation': fireStation})
+    return render(request, 'create_report.html', {'form': form, 'fireStation': firestation})
 
 
 @login_required
 def modify_report(request, pk):
-    report = get_object_or_404(Report, pk=pk)
-    fireStation = Firestation.objects.filter(stationid=report.stationid).first()
-    userStations = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
-    if fireStation not in userStations:
+    report = getReport(pk)
+    firestation = getFirestation(report.stationid)
+    firestations = getUserFirestations(request.user)
+    if firestation not in firestations:
         return render(request, "information.html",
                       {'message': "Dostęp zabroniony", 'return_button': True})
 
@@ -120,7 +144,7 @@ def modify_report(request, pk):
                 section += str(val) + ","
             section = section[:-1]
             Report.objects.filter(pk=pk).update(
-                stationid=fireStation.stationid,
+                stationid=firestation.stationid,
                 reportid=cd['reportid'],
                 departureTime=cd['departureTime'],
                 arrivalTime=cd['arrivalTime'],
@@ -142,7 +166,8 @@ def modify_report(request, pk):
             return render(request, "information.html",
                           {'message': "Pomyślnie zmodyfikowano raport", 'return_button': True})
     else:
-        section = Firefighter.objects.filter(stationid=fireStation.stationid)
+        section = getFirestationSection(firestation.stationid)
+        # section = Firefighter.objects.filter(stationid=fireStation.stationid)
         sectionCommanders = section.filter(isSectionCommander=True)
         actionCommanders = section.filter(isActionCommander=True)
         drivers = section.filter(isDriver=True)
@@ -175,7 +200,7 @@ def modify_report(request, pk):
         form.fields['actionCommander'].queryset = actionCommanders
         form.fields['sectionCommander'].queryset = sectionCommanders
         form.fields['section'].queryset = section
-    return render(request, 'modify_report.html', {'form': form, 'fireStation': fireStation, 'report': report,
+    return render(request, 'modify_report.html', {'form': form, 'fireStation': firestation, 'report': report,
                                                   'departureTime': report.departureTime.strftime("%Y-%m-%dT%H:%M"),
                                                   'arrivalTime': report.arrivalTime.strftime("%Y-%m-%dT%H:%M"),
                                                   'actionEndTime': report.actionEndTime.strftime("%Y-%m-%dT%H:%M"),
@@ -190,19 +215,23 @@ def modify_report(request, pk):
 @login_required
 def reports_list(request):
     user = request.user
-    userStations = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
-    reports = Report.objects.filter(stationid__in=userStations)
+    firestations = getUserFirestations(request.user)
+    # userStations = Firestation.objects.filter(
+    # stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
+    reports = Report.objects.filter(stationid__in=firestations)
     return render(request, "reports.html", {'reports': reports})
 
 
 @login_required
 def report_details(request, pk):
-    report = get_object_or_404(Report, pk=pk)
-    userStations = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
-    station = Firestation.objects.filter(stationid=report.stationid).first()
-    if station not in userStations:
+    report = getReport(pk)
+    # report = get_object_or_404(Report, pk=pk)
+    firestations = getUserFirestations(request.user)
+    # userStations = Firestation.objects.filter(
+    # stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
+    station = getFirestation(report.stationid)
+    # station = Firestation.objects.filter(stationid=report.stationid).first()
+    if station not in firestations:
         return render(request, "information.html",
                       {'message': "Dostęp zabroniony", 'return_button': True})
     firefighters = report.section.split(",")
@@ -211,14 +240,18 @@ def report_details(request, pk):
 
 @login_required
 def lock_report(request, pk):
-    report = get_object_or_404(Report, pk=pk)
-    userStations = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
-    station = Firestation.objects.filter(stationid=report.stationid).first()
-    if station not in userStations:
+    report = getReport(pk)
+    # report = get_object_or_404(Report, pk=pk)
+    firestations = getUserFirestations(request.user)
+    # userStations = Firestation.objects.filter(
+    # stationid__in=FirestationMember.objects.filter(memberid=request.user).values("stationid"))
+    station = getFirestation(report.reportid)
+    # station = Firestation.objects.filter(stationid=report.stationid).first()
+    if station not in firestations:
         return render(request, "information.html",
                       {'message': "Dostęp zabroniony", 'return_button': True})
-    Report.objects.filter(pk=pk).update(isLocked=True)
+    lockReport(pk)
+    # Report.objects.filter(pk=pk).update(isLocked=True)
     return render(request, "information.html",
                   {'message': "Pomyślnie zamknięto raport", 'return_button': True})
 
@@ -230,7 +263,8 @@ def mainpage(request):
 @login_required
 def report_render_pdf_view(request, *args, **kwargs):
     pk = kwargs.get("pk")
-    report = get_object_or_404(Report, pk=pk)
+    report = getReport(pk)
+    # report = get_object_or_404(Report, pk=pk)
     template_path = "reportpdf.html"
     context = {'report': report, 'section': report.section.split(",")}
     # Create a Django response object, and specify content_type as pdf
@@ -305,11 +339,12 @@ def user_registration(request):
 @login_required
 def profile(request):
     user = request.user
-    fireStations = Firestation.objects.filter(
-        stationid__in=FirestationMember.objects.filter(memberid=user).values("stationid"))
-    firestationsEmpty = len(fireStations) == 0
+    firestations = getUserFirestations(request.user)
+    # fireStations = Firestation.objects.filter(
+    # stationid__in=FirestationMember.objects.filter(memberid=user).values("stationid"))
+    firestationsEmpty = len(firestations) == 0
     return render(request, "profile.html",
-                  {"user": user, "fireStations": fireStations, "firestationsEmpty": firestationsEmpty})
+                  {"user": user, "fireStations": firestations, "firestationsEmpty": firestationsEmpty})
 
 
 @login_required
@@ -328,10 +363,13 @@ def create_firestation(request):
 
 @login_required
 def firestation_details(request, pk):
-    firestation = get_object_or_404(Firestation, pk=pk)
-    firefighters = Firefighter.objects.filter(stationid=firestation)
-    firestationMembers = User.objects.filter(
-        id__in=FirestationMember.objects.filter(stationid=firestation).values("memberid"))
+    firestation = getFirestation(pk)
+    # firestation = get_object_or_404(Firestation, pk=pk)
+    firefighters = getFirestationSection(firestation)
+    # firefighters = Firefighter.objects.filter(stationid=firestation)
+    firestationMembers = getFirestationMembers(firestation)
+    # firestationMembers = User.objects.filter(
+    #    id__in=FirestationMember.objects.filter(stationid=firestation).values("memberid"))
 
     if request.method == 'POST':
         form = FirestatiomMemberForm(request.POST)
